@@ -1,62 +1,55 @@
 package claudiogiasi.progettosettimana3.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "utenti")
+@NoArgsConstructor
 @Getter
+@Setter
 @ToString
+
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
     @Column(name = "id_utente")
     private UUID id;
+
     @Column(unique = true, nullable = false)
     private String username;
+
     @Column(nullable = false)
-    private String nome_completo;
+    private String name;
+
+    @Column(nullable = false)
+    private String surname;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     @Column(nullable = false)
     @ToString.Exclude
+    @JsonIgnore
     private String password;
+
     @Enumerated(EnumType.STRING)
+    @Setter(AccessLevel.NONE)
     @Column(nullable = false)
     private Role role;
 
-    public User() {
-    }
-
-    public User(String username, String nome_completo, String email, String password) {
+    public User(String username, String name, String surname, String email, String password) {
         this.username = username;
-        this.nome_completo = nome_completo;
+        this.name = name;
+        this.surname = surname;
         this.email = email;
         this.password = password;
         this.role = Role.MEMBER;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setNome_completo(String nome_completo) {
-        this.nome_completo = nome_completo;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 }

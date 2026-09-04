@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -22,16 +22,20 @@ public class Post {
     private User user;
     @Column(nullable = false)
     private String testo;
-    @Column(name = "pubblicazione", nullable = false)
-    private LocalDate pubblicazione;
+    @Column(name = "data_pubblicazione", nullable = false)
+    private LocalDateTime dataPubblicazione;
 
     public Post() {
     }
 
-    public Post(User user, String testo, LocalDate pubblicazione) {
+    public Post(User user, String testo) {
         this.user = user;
         this.testo = testo;
-        this.pubblicazione = pubblicazione;
+    }
+
+    @PrePersist
+    private void onCreate() {
+        this.dataPubblicazione = LocalDateTime.now();
     }
 
     public void setTesto(String testo) {
