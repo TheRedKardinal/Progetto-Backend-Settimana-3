@@ -2,6 +2,7 @@ package claudiogiasi.progettosettimana3.services;
 
 import claudiogiasi.progettosettimana3.dto.LoginRequestDTO;
 import claudiogiasi.progettosettimana3.dto.RegisterRequestDTO;
+import claudiogiasi.progettosettimana3.entities.Role;
 import claudiogiasi.progettosettimana3.entities.User;
 import claudiogiasi.progettosettimana3.exceptions.BadRequestException;
 import claudiogiasi.progettosettimana3.exceptions.NotFoundException;
@@ -11,6 +12,7 @@ import claudiogiasi.progettosettimana3.security.JwtTool;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,6 +31,10 @@ public class UserService {
     public User findById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Utente non trovato"));
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     public User register(RegisterRequestDTO registerRequestDTO) {
@@ -63,5 +69,11 @@ public class UserService {
         }
 
         return jwtTool.generateToken(user);
+    }
+
+    public User changeRole(UUID id, Role role) {
+        User user = findById(id);
+        user.changeRole(role);
+        return userRepository.save(user);
     }
 }

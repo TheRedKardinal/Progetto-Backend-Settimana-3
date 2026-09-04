@@ -1,0 +1,323 @@
+{
+  "info": {
+    "name": "Progetto Settimana 3",
+    "description": "Collection per testare register/login, utenti, post e like. Le richieste di Register generano dati casuali via pre-request script (salvati in variabili della collection) e le richieste successive (Login, Post, Like) li riusano da sole, cosi' la collection e' ripetibile senza conflitti su username/email duplicati.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "u1Username", "value": "" },
+    { "key": "u1Password", "value": "" },
+    { "key": "u2Username", "value": "" },
+    { "key": "u2Password", "value": "" },
+    { "key": "token", "value": "" },
+    { "key": "token2", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "user2Id", "value": "" },
+    { "key": "postId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register utente1",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{u1Username}}\",\n  \"name\": \"{{u1Name}}\",\n  \"surname\": \"{{u1Surname}}\",\n  \"email\": \"{{u1Email}}\",\n  \"password\": \"{{u1Password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('u1Username', 'utente1_' + Date.now());",
+                  "pm.collectionVariables.set('u1Name', pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.collectionVariables.set('u1Surname', pm.variables.replaceIn('{{$randomLastName}}'));",
+                  "pm.collectionVariables.set('u1Email', pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.collectionVariables.set('u1Password', pm.variables.replaceIn('{{$randomPassword}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('userId', body.id);",
+                  "}",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register utente2",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{u2Username}}\",\n  \"name\": \"{{u2Name}}\",\n  \"surname\": \"{{u2Surname}}\",\n  \"email\": \"{{u2Email}}\",\n  \"password\": \"{{u2Password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('u2Username', 'utente2_' + Date.now());",
+                  "pm.collectionVariables.set('u2Name', pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.collectionVariables.set('u2Surname', pm.variables.replaceIn('{{$randomLastName}}'));",
+                  "pm.collectionVariables.set('u2Email', pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.collectionVariables.set('u2Password', pm.variables.replaceIn('{{$randomPassword}}'));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('user2Id', body.id);",
+                  "}",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login utente1",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{u1Username}}\",\n  \"password\": \"{{u1Password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('token', body.token);",
+                  "}",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login utente2",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{u2Username}}\",\n  \"password\": \"{{u2Password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('token2', body.token);",
+                  "}",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - password sbagliata (atteso 401)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{u1Username}}\",\n  \"password\": \"sicuramentesbagliata\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Utenti",
+      "item": [
+        {
+          "name": "GET /me",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/utenti/me", "host": ["{{baseUrl}}"], "path": ["api", "utenti", "me"] }
+          }
+        },
+        {
+          "name": "GET /me - senza token (atteso 401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/utenti/me", "host": ["{{baseUrl}}"], "path": ["api", "utenti", "me"] }
+          }
+        },
+        {
+          "name": "GET utente by id",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/utenti/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "utenti", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "GET tutti gli utenti",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/utenti", "host": ["{{baseUrl}}"], "path": ["api", "utenti"] }
+          }
+        },
+        {
+          "name": "PATCH cambia ruolo utente2 (atteso 403, utente1 non è MODERATOR)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"MODERATOR\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/utenti/{{user2Id}}/role", "host": ["{{baseUrl}}"], "path": ["api", "utenti", "{{user2Id}}", "role"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Post",
+      "item": [
+        {
+          "name": "Crea post (utente1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"testo\": \"Il mio primo post\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/post", "host": ["{{baseUrl}}"], "path": ["api", "post"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('postId', body.id);",
+                  "}",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET tutti i post",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/post", "host": ["{{baseUrl}}"], "path": ["api", "post"] }
+          }
+        },
+        {
+          "name": "GET post by id",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/post/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "post", "{{postId}}"] }
+          }
+        },
+        {
+          "name": "Modifica post (autore, atteso 200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"testo\": \"Post modificato dall'autore\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/post/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "post", "{{postId}}"] }
+          }
+        },
+        {
+          "name": "Modifica post (NON autore, atteso 403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token2}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"testo\": \"Modifica non autorizzata\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/post/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "post", "{{postId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Like",
+      "item": [
+        {
+          "name": "Metti like (utente2, atteso 201)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token2}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/like/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "like", "{{postId}}"] }
+          }
+        },
+        {
+          "name": "Metti like di nuovo (atteso 400, doppio like)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token2}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/like/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "like", "{{postId}}"] }
+          }
+        },
+        {
+          "name": "Togli like (atteso 204)",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token2}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/like/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "like", "{{postId}}"] }
+          }
+        },
+        {
+          "name": "Togli like di nuovo (atteso 404)",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token2}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/like/{{postId}}", "host": ["{{baseUrl}}"], "path": ["api", "like", "{{postId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
